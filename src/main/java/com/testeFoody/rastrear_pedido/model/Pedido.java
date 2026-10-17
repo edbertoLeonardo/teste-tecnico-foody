@@ -2,7 +2,6 @@ package com.testeFoody.rastrear_pedido.model;
 
 import com.testeFoody.rastrear_pedido.enums.StatusPedido;
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
 
 import java.util.ArrayList;
 import java.util.List;

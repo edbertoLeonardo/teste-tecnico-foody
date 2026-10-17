@@ -1,7 +1,6 @@
 package com.testeFoody.rastrear_pedido.model;
 
 import jakarta.persistence.*;
-import org.springframework.data.annotation.Id;
 
 
 @Entity
