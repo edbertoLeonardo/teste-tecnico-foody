@@ -2,11 +2,20 @@ package com.testeFoody.rastrear_pedido.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractAuthenticationFilterConfigurer;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
+import org.springframework.security.web.context.SecurityContextRepository;
 
 @Configuration
 @EnableWebSecurity
@@ -18,16 +27,50 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public DaoAuthenticationProvider authenticationProvider(UserDetailsService userDetailsService, PasswordEncoder passwordEncoder) {
+
+        DaoAuthenticationProvider provider = new DaoAuthenticationProvider(userDetailsService);
+        provider.setPasswordEncoder(passwordEncoder);
+        return provider;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
+        return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public SecurityContextRepository securityContextRepository() {
+        return new HttpSessionSecurityContextRepository();
+    }
+
+    @Bean
+    public SecurityFilterChain securityFilterChain(
+            HttpSecurity http,
+            DaoAuthenticationProvider authenticationProvider,
+            SecurityContextRepository securityContextRepository)
+            throws Exception {
+
         http
-                .csrf(csrf -> csrf.disable())
-                .headers(headers -> headers.frameOptions(frame -> frame.disable()))
+                .authenticationProvider(authenticationProvider)
+                .securityContext(context -> context.securityContextRepository(securityContextRepository))
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(headers ->
+                        headers.frameOptions(
+                                HeadersConfigurer.FrameOptionsConfig::disable
+                        )
+                )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/users/register", "/h2-console/**").permitAll()
+                        .requestMatchers(
+                                "/api/users/register",
+                                "/api/auth/login",
+                                "/h2-console/**"
+                        ).permitAll()
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form.permitAll())
-                .httpBasic(httpBasic -> {});
+                .formLogin(AbstractAuthenticationFilterConfigurer::permitAll)
+                .httpBasic(httpBasic -> {
+                });
 
         return http.build();
     }

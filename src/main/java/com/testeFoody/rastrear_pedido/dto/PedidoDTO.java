@@ -9,8 +9,6 @@ import java.util.List;
 
 public class PedidoDTO {
 
-    @NotNull(message = "O ID do cliente é obrigatório")
-    private Long clienteId;
 
     @NotBlank(message = "O endereço de entrega é obrigatório")
     private String enderecoEntrega;
@@ -20,14 +18,6 @@ public class PedidoDTO {
     private List<ItemPedidoDTO> itens;
 
     public PedidoDTO() {}
-
-    public Long getClienteId() {
-        return clienteId;
-    }
-
-    public void setClienteId(Long clienteId) {
-        this.clienteId = clienteId;
-    }
 
     public String getEnderecoEntrega() {
         return enderecoEntrega;

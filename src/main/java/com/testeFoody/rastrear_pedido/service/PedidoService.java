@@ -11,6 +11,8 @@ import com.testeFoody.rastrear_pedido.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,25 +26,29 @@ public class PedidoService {
     @Autowired
     private UserRepository userRepository;
 
-    @Transactional
     public Pedido criarPedido(PedidoDTO dto) {
-        // Verificar se o cliente existe
-        User cliente = userRepository.findById(dto.getClienteId())
-                .orElseThrow(() -> new RecursoNaoEncontradoException(
-                        "Cliente não encontrado com o ID: " + dto.getClienteId()));
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        User cliente = userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Usuário autenticado não encontrado")
+                );
 
         Pedido pedido = new Pedido();
         pedido.setCliente(cliente);
         pedido.setEnderecoEntrega(dto.getEnderecoEntrega());
         pedido.setStatus(StatusPedido.RECEBIDO);
 
-        List<ItemPedido> itens = dto.getItens().stream().map(itemDto -> {
-            ItemPedido item = new ItemPedido();
-            item.setNomeProduto(itemDto.getNomeProduto());
-            item.setQuantidade(itemDto.getQuantidade());
-            item.setPedido(pedido);
-            return item;
-        }).collect(Collectors.toList());
+        List<ItemPedido> itens = dto.getItens().stream()
+                .map(itemDto -> {
+                    ItemPedido item = new ItemPedido();
+                    item.setNomeProduto(itemDto.getNomeProduto());
+                    item.setQuantidade(itemDto.getQuantidade());
+                    item.setPedido(pedido);
+                    return item;
+                })
+                .collect(Collectors.toList());
 
         pedido.setItens(itens);
 
