@@ -1,0 +1,62 @@
+package com.testeFoody.rastrear_pedido.service;
+
+import com.testeFoody.rastrear_pedido.dto.PedidoDTO;
+import com.testeFoody.rastrear_pedido.enums.StatusPedido;
+import com.testeFoody.rastrear_pedido.model.ItemPedido;
+import com.testeFoody.rastrear_pedido.model.Pedido;
+import com.testeFoody.rastrear_pedido.model.User;
+import com.testeFoody.rastrear_pedido.repository.PedidoRepository;
+import com.testeFoody.rastrear_pedido.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class PedidoService {
+
+    @Autowired
+    private PedidoRepository pedidoRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    public Pedido criarPedido(PedidoDTO dto) {
+        // Verificar se o cliente existe
+        User cliente = userRepository.findById(dto.getClienteId())
+                .orElseThrow(() -> new RuntimeException("Cliente não encontrado com o ID: " + dto.getClienteId()));
+
+        Pedido pedido = new Pedido();
+        pedido.setCliente(cliente);
+        pedido.setEnderecoEntrega(dto.getEnderecoEntrega());
+        pedido.setStatus(StatusPedido.RECEBIDO);
+
+        List<ItemPedido> itens = dto.getItens().stream().map(itemDto -> {
+            ItemPedido item = new ItemPedido();
+            item.setNomeProduto(itemDto.getNomeProduto());
+            item.setQuantidade(itemDto.getQuantidade());
+            item.setPedido(pedido);
+            return item;
+        }).collect(Collectors.toList());
+
+        pedido.setItens(itens);
+
+        return pedidoRepository.save(pedido);
+    }
+
+    public List<Pedido> listarTodos() {
+        return pedidoRepository.findAll();
+    }
+
+    public Pedido buscarPorId(Long id) {
+        return pedidoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pedido não encontrado com o ID: " + id));
+    }
+
+    public Pedido atualizarStatus(Long id, StatusPedido novoStatus) {
+        Pedido pedido = buscarPorId(id);
+        pedido.setStatus(novoStatus);
+        return pedidoRepository.save(pedido);
+    }
+}
