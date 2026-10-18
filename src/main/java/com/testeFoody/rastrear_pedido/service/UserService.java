@@ -2,6 +2,7 @@ package com.testeFoody.rastrear_pedido.service;
 
 import com.testeFoody.rastrear_pedido.config.SecurityConfig;
 import com.testeFoody.rastrear_pedido.dto.UserDTO;
+import com.testeFoody.rastrear_pedido.exception.EmailJaRegistradoException;
 import com.testeFoody.rastrear_pedido.model.User;
 import com.testeFoody.rastrear_pedido.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,7 @@ public class UserService {
 
     public User registar(UserDTO dto) {
         if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            throw new RuntimeException("Este e-mail já está registado!");
+            throw new EmailJaRegistradoException("Este e-mail já está registado!");
         }
 
         User user = new User();

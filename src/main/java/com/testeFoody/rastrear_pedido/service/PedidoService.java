@@ -2,7 +2,7 @@ package com.testeFoody.rastrear_pedido.service;
 
 import com.testeFoody.rastrear_pedido.dto.PedidoDTO;
 import com.testeFoody.rastrear_pedido.enums.StatusPedido;
-import com.testeFoody.rastrear_pedido.exception.RecursoNaoEncontradoException;
+import com.testeFoody.rastrear_pedido.exception.PedidoNaoEncontradoException;
 import com.testeFoody.rastrear_pedido.model.ItemPedido;
 import com.testeFoody.rastrear_pedido.model.Pedido;
 import com.testeFoody.rastrear_pedido.model.User;
@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -56,19 +57,32 @@ public class PedidoService {
     }
 
     public List<Pedido> listarTodos() {
-        return pedidoRepository.findAll();
+        User usuario = getUsuarioAutenticado();
+        return pedidoRepository.findByClienteId(usuario.getId());
     }
 
     public Pedido buscarPorId(Long id) {
-        return pedidoRepository.findById(id)
-                .orElseThrow(() -> new RecursoNaoEncontradoException(
-                        "Pedido não encontrado com o ID: " + id));
+        User usuario = getUsuarioAutenticado();
+        return pedidoRepository.findByIdAndClienteId(id, usuario.getId())
+                .orElseThrow(() ->
+                        new PedidoNaoEncontradoException("Pedido não encontrado com o ID: " + id)
+                );
     }
+
 
     @Transactional
     public Pedido atualizarStatus(Long id, StatusPedido novoStatus) {
         Pedido pedido = buscarPorId(id);
         pedido.setStatus(novoStatus);
         return pedidoRepository.save(pedido);
+    }
+
+    private User getUsuarioAutenticado() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        new RuntimeException("Usuário autenticado não encontrado")
+                );
     }
 }
