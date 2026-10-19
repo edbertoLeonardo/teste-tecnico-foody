@@ -4,7 +4,7 @@ Aplicação web desenvolvida como parte de um desafio técnico para gerenciament
 
 ## Repositório
 
-[https://github.com/edbertoLeonardo/testeTecnicoFoody](https://github.com/edbertoLeonardo/testeTecnicoFoody)
+[https://github.com/edbertoLeonardo/teste-tecnico-foody](https://github.com/edbertoLeonardo/testeTecnicoFoody)
 
 ## Tecnologias utilizadas
 
@@ -57,13 +57,13 @@ Aplicação web desenvolvida como parte de um desafio técnico para gerenciament
 Abra um terminal e execute:
 
 ```bash
-git clone https://github.com/edbertoLeonardo/testeTecnicoFoody.git
-cd testeTecnicoFoody
+git clone https://github.com/edbertoLeonardo/teste-tecnico-foody
+cd teste-tecnico-foody
 ```
 
 ### 2. Executar o back-end
 
-Na raiz do projeto, abra um terminal e execute:
+Entre na pasta backend, abra o terminal e execute:
 
 ```bash
 ./mvnw spring-boot:run
@@ -77,11 +77,9 @@ Mantenha esse terminal aberto enquanto estiver utilizando a aplicação.
 
 ### 3. Executar o front-end
 
-Abra um segundo terminal, na raiz do projeto, e execute:
+Abra um segundo terminal, na pasta do projeto, entre em frontend e execute:
 
 ```bash
-cd rastrear-pedido-front/
-npm install
 npm run dev
 ```
 

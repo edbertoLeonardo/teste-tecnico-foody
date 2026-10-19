@@ -105,13 +105,7 @@ function Pedidos() {
                 <button className="btn-primary" onClick={handleLogout}>
                     Sair da conta
                 </button>
-                <button
-                    className="btn-primary"
-                    onClick={carregarPedidos}
-                    disabled={carregando}
-                >
-                    {carregando ? 'A carregar...' : 'Atualizar pedidos'}
-                </button>
+
                 <button
                     className="btn-primary"
                     onClick={() => navigate('/novo-pedido')}
@@ -160,6 +154,7 @@ function Pedidos() {
                                 </label>
 
                                 <select
+                                    className='btn-primary'
                                     id={`status-${pedido.id}`}
                                     value={pedido.status}
                                     onChange={(event) =>

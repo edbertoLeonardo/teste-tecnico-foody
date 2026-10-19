@@ -90,7 +90,7 @@ function NovoPedido() {
     }
 
     return (
-        <main className="novo-pedido-container">
+        <main className="container novo-pedido-container">
             <header>
                 <h1>Foody</h1>
                 <h2>Novo pedido</h2>
@@ -163,14 +163,17 @@ function NovoPedido() {
                         </div>
 
                         {itens.length > 1 && (
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setItens(itens.filter((_, i) => i !== index))
-                                }}
-                            >
-                                Remover item
-                            </button>
+                            <div className='container'>
+                                <button
+                                    className="btn-primary"
+                                    type="button"
+                                    onClick={() => {
+                                        setItens(itens.filter((_, i) => i !== index))
+                                    }}
+                                >
+                                    Remover item
+                                </button>
+                            </div>
                         )} </div>
                 ))}
 
