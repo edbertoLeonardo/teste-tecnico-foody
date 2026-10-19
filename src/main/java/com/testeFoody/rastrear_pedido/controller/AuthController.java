@@ -11,12 +11,10 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.security.web.context.SecurityContextRepository;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
@@ -76,5 +74,34 @@ public class AuthController {
                             "erro", "E-mail ou senha inválidos"
                     ));
         }
+    }
+
+
+    @GetMapping("/me")
+    public ResponseEntity<Map<String, String>> usuarioAutenticado(
+            Authentication authentication) {
+
+        return ResponseEntity.ok(
+                Map.of(
+                        "email", authentication.getName()
+                )
+        );
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Map<String, String>> logout(
+            HttpServletRequest request,
+            HttpServletResponse response) {
+
+        new SecurityContextLogoutHandler()
+                .logout(
+                        request,
+                        response,
+                        SecurityContextHolder.getContext().getAuthentication()
+                );
+
+        return ResponseEntity.ok(
+                Map.of("mensagem", "Logout realizado com sucesso")
+        );
     }
 }

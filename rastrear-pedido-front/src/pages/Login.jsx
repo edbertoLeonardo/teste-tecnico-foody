@@ -18,8 +18,7 @@ function Login() {
         setCarregando(true)
 
         try {
-            const resposta = await fetch(
-                'http://localhost:8080/api/auth/login',
+            const resposta = await fetch('http://localhost:8080/api/auth/login',
                 {
                     method: 'POST',
                     headers: {
@@ -27,8 +26,7 @@ function Login() {
                     },
                     credentials: 'include',
                     body: JSON.stringify({
-                        email,
-                        senha,
+                        email, senha,
                     }),
                 }
             )
